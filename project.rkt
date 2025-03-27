@@ -1,5 +1,6 @@
 #lang racket
 
+;; Prompt Setup 
 
 (define prompt?
   (let [(args (current-command-line-arguments))]
@@ -9,28 +10,62 @@
       [(string=? (vector-ref args 0) "--batch") #f]
       [else #t])))
 
+;; Evaluate simple prefix expression  
 
-
-
-(define (evaluate-plus-expression input)
+(define (evaluate-prefix-expression input)
   (define tokens (string-split input))
   (cond
-    [(< (length tokens) 3)
-     (error "Not enough arguments")]
-    [(not (string=? (first tokens) "+"))
-     (error "Operator must be +")]
+    [(null? tokens)
+     (error "Empty input")]
+
+    ;; "+" operator (binary)
+    [(string=? (first tokens) "+")
+     (if (< (length tokens) 3)
+         (error "Not enough arguments for +")
+         (let* ([arg1 (string->number (second tokens))]
+                [arg2 (string->number (third tokens))])
+           (if (and arg1 arg2)
+               (+ arg1 arg2)
+               (error "Invalid numbers for +"))))]
+
+    ;; "*" operator (binary)
+    [(string=? (first tokens) "*")
+     (if (< (length tokens) 3)
+         (error "Not enough arguments for *")
+         (let* ([arg1 (string->number (second tokens))]
+                [arg2 (string->number (third tokens))])
+           (if (and arg1 arg2)
+               (* arg1 arg2)
+               (error "Invalid numbers for *"))))]
+
+    ;; "/" operator (binary)
+    [(string=? (first tokens) "/")
+     (if (< (length tokens) 3)
+         (error "Not enough arguments for /")
+         (let* ([arg1 (string->number (second tokens))]
+                [arg2 (string->number (third tokens))])
+           (cond
+             [(not (and arg1 arg2)) (error "Invalid numbers for /")]
+             [(= arg2 0) (error "Divide by zero")]
+             [else (quotient arg1 arg2)])))]
+
+    ;; "-" operator (unary)
+    [(string=? (first tokens) "-")
+     (if (< (length tokens) 2)
+         (error "Not enough arguments for -")
+         (let ([arg (string->number (second tokens))])
+           (if arg
+               (- arg)
+               (error "Invalid number for -"))))]
+
     [else
-     (define arg1 (string->number (second tokens)))
-     (define arg2 (string->number (third tokens)))
-     (if (and arg1 arg2)
-         (+ arg1 arg2)
-         (error "Invalid numbers"))]))
+     (error "Unsupported operator (only +, -, *, / allowed)")]))
 
-
+;; Main Loop
 
 (define (main)
   (when prompt?
-    (displayln "Enter a prefix expression followed by two numbers (e.g., + 1 2):")
+    (displayln "Enter a prefix expression starting with +,*,/ (binary) or - (unary):")
     (display "> ")
     (flush-output))
   
@@ -41,10 +76,9 @@
                        (λ (e)
                          (displayln (string-append "Error: " (exn-message e)))
                          (main))])
-        (define result (evaluate-plus-expression input))
+        (define result (evaluate-prefix-expression input))
         (displayln (format "Result: ~a" result))
         (main))))
 
 
-
-(main) ;
+(main)
