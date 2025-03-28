@@ -44,17 +44,12 @@ Enter a prefix expression starting with +,*,/ (binary) or - (unary), or type 'ex
 You can now type expressions like:
 
 ```bash
-
-```
-
 - 3 4 ; Output: 1: 7.0
 
 * 5 ; Output: 2: -5.0
 
 - 2 6 ; Output: 3: 12.0
   exit ; Exits the program
-
-```
 
 ```
 
@@ -66,12 +61,7 @@ If run with the -b or --batch command-line argument, the prompt is suppressed an
 Example:
 
 ```bash
-
-```
-
 racket main.rkt -b
-
-```
 
 ```
 
