@@ -61,24 +61,37 @@
     [else
      (error "Unsupported operator (only +, -, *, / allowed)")]))
 
-;; Main Loop
+;; Main Loop With History
 
-(define (main)
+(define (main-loop history)
   (when prompt?
-    (displayln "Enter a prefix expression starting with +,*,/ (binary) or - (unary):")
+    (displayln "Enter a prefix expression starting with +,*,/ (binary) or - (unary), or type 'exit' to quit:")
     (display "> ")
     (flush-output))
   
   (define input (read-line))
-  (if (or (eof-object? input) (string=? input ""))
-      (void)
-      (with-handlers ([exn:fail?
-                       (λ (e)
-                         (displayln (string-append "Error: " (exn-message e)))
-                         (main))])
-        (define result (evaluate-prefix-expression input))
-        (displayln (format "Result: ~a" result))
-        (main))))
 
+  (cond
+    [(or (eof-object? input) (string-ci=? input "exit"))
+     (when prompt? (displayln "Exiting calculator...")) (void)]
+
+    [else
+     (with-handlers ([exn:fail?
+                      (λ (e)
+                        (displayln (string-append "Error: " (exn-message e)))
+                        (main-loop history))])
+       (define result (evaluate-prefix-expression input))
+       (define new-history (cons result history))
+       (define id (length new-history))
+       ;; Convert to float and print with id
+       (display id)
+       (display ": ")
+       (display (real->double-flonum result))
+       (newline)
+       (main-loop new-history))]))
+
+;; Start with empty history
+(define (main)
+  (main-loop '()))
 
 (main)
