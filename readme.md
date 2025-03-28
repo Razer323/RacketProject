@@ -55,7 +55,8 @@ You can now type expressions like:
 
 ---
 
-###📂 Batch Mode (optional)
+### 📂 Batch Mode (optional)
+
 If run with the -b or --batch command-line argument, the prompt is suppressed and only results or error messages are printed.
 
 Example:
@@ -82,3 +83,9 @@ History tracking using a list and cons
 History output with ID and float conversion
 
 Graceful exit via "exit"
+
+### 👨‍💻 Author
+
+Developed by Ananth Ram Tekkalakota
+
+For CS4337 Pradigms Elmer Salzar Spring Semster of 2025
